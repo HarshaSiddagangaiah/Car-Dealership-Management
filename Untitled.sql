@@ -1,0 +1,336 @@
+CREATE DATABASE car_dealership_management;
+
+USE car_dealership_management;
+
+-- Car Dealership Management Database Schema
+
+-- Customers table
+CREATE TABLE Customers (
+  CustomerID INT AUTO_INCREMENT PRIMARY KEY,
+  FirstName VARCHAR(50) NOT NULL,
+  LastName VARCHAR(50) NOT NULL,
+  Email VARCHAR(100) UNIQUE NOT NULL,
+  Phone VARCHAR(20) NOT NULL,
+  Address VARCHAR(200) NOT NULL
+);
+
+-- Cars table
+CREATE TABLE Cars (
+  CarID INT AUTO_INCREMENT PRIMARY KEY,
+  Make VARCHAR(50) NOT NULL,
+  Model VARCHAR(50) NOT NULL,
+  Year INT NOT NULL,
+  Price DECIMAL(10,2) NOT NULL,
+  Color VARCHAR(50) NOT NULL,
+  Mileage INT NOT NULL,
+  Transmission VARCHAR(50) NOT NULL,
+  FuelType VARCHAR(50) NOT NULL,
+  BodyType VARCHAR(50) NOT NULL
+);
+
+-- Employees table
+CREATE TABLE Employees (
+  EmployeeID INT AUTO_INCREMENT PRIMARY KEY,
+  FirstName VARCHAR(50) NOT NULL,
+  LastName VARCHAR(50) NOT NULL,
+  Email VARCHAR(100) UNIQUE NOT NULL,
+  Phone VARCHAR(20) NOT NULL,
+  Address VARCHAR(200) NOT NULL,
+  HireDate DATE NOT NULL
+);
+
+-- Purchases table
+CREATE TABLE Purchases (
+  PurchaseID INT AUTO_INCREMENT PRIMARY KEY,
+  PurchaseDate DATE NOT NULL,
+  PurchasePrice DECIMAL(10,2) NOT NULL,
+  CarID INT NOT NULL,
+  CustomerID INT NOT NULL,
+  EmployeeID INT NOT NULL,
+  CONSTRAINT FK_Cars_Purchases FOREIGN KEY (CarID) REFERENCES Cars(CarID),
+  CONSTRAINT FK_Customers_Purchases FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+  CONSTRAINT FK_Employees_Purchases FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+
+-- SoldCars table
+CREATE TABLE SoldCars (
+  SoldCarID INT AUTO_INCREMENT PRIMARY KEY,
+  PurchaseDate DATE NOT NULL,
+  PurchasePrice DECIMAL(10,2) NOT NULL,
+  SoldDate DATE NOT NULL,
+  SoldPrice DECIMAL(10,2) NOT NULL,
+  CarID INT NOT NULL,
+  CustomerID INT NOT NULL,
+  EmployeeID INT NOT NULL,
+  CONSTRAINT FK_Cars_SoldCars FOREIGN KEY (CarID) REFERENCES Cars(CarID),
+  CONSTRAINT FK_Customers_SoldCars FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+  CONSTRAINT FK_Employees_SoldCars FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+-- Appointments table
+CREATE TABLE Appointments (
+  AppointmentID INT AUTO_INCREMENT PRIMARY KEY,
+  EmployeeID INT NOT NULL,
+  AppointmentDate DATE NOT NULL,
+  AppointmentTime TIME NOT NULL,
+  AppointmentType VARCHAR(50) NOT NULL,
+  CONSTRAINT FK_Employees_Appointments FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
+
+
+-- TestDrives table
+CREATE TABLE TestDrives (
+  TestDriveID INT AUTO_INCREMENT PRIMARY KEY,
+  CustomerID INT NOT NULL,
+  CarID INT NOT NULL,
+  AppointmentID INT NOT NULL,
+  TestDriveDate DATE NOT NULL,
+  TestDriveTime TIME NOT NULL,
+  CONSTRAINT FK_Customers_TestDrives FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+  CONSTRAINT FK_Cars_TestDrives FOREIGN KEY (CarID) REFERENCES Cars(CarID),
+  CONSTRAINT FK_Appointments_TestDrives FOREIGN KEY (AppointmentID) REFERENCES Appointments(AppointmentID)
+);
+
+-- MaintenanceTypes table
+CREATE TABLE MaintenanceTypes (
+  MaintenanceTypeID INT AUTO_INCREMENT PRIMARY KEY,
+  MaintenanceType VARCHAR(50) NOT NULL,
+  MaintenanceCost DECIMAL(10,2) NOT NULL
+);
+
+-- Maintenance table
+CREATE TABLE Maintenances (
+  MaintenanceID INT AUTO_INCREMENT PRIMARY KEY,
+  CustomerID INT NOT NULL,
+  CarID INT NOT NULL,
+  AppointmentID INT NOT NULL,
+  MaintenanceDate DATE NOT NULL,
+  MaintenanceTime TIME NOT NULL,
+  CONSTRAINT FK_Customers_Maintenances FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+  CONSTRAINT FK_Cars_Maintenances FOREIGN KEY (CarID) REFERENCES Cars(CarID),
+  CONSTRAINT FK_Appointments_Maintenances FOREIGN KEY (AppointmentID) REFERENCES Appointments(AppointmentID)
+);
+
+
+CREATE TABLE MaintenanceActivity (
+  MaintenanceID INT NOT NULL,
+  MaintenanceTypeID INT NOT NULL,
+  CONSTRAINT PK_MaintenanceActivity PRIMARY KEY (MaintenanceID, MaintenanceTypeID),
+  CONSTRAINT FK_Maintenances_MaintenanceActivity FOREIGN KEY (MaintenanceID) REFERENCES Maintenances(MaintenanceID),
+  CONSTRAINT FK_MaintenanceTypes_MaintenanceActivity FOREIGN KEY (MaintenanceTypeID) REFERENCES MaintenanceTypes(MaintenanceTypeID)
+);
+
+
+INSERT INTO Customers ( FirstName, LastName, Email, Phone, Address) VALUES
+('John', 'Doe', 'johndoe@gmail.com', '555-555-1234', '122 Main St'),
+('Jane', 'Smith', 'janesmith@gmail.com', '555-555-5677', '455 Elm St'),
+('Bob', 'Johnson', 'bobjohnson@gmail.com', '555-555-9011', '788 Oak St'),
+('Samantha', 'Jones', 'samanthajones@gmail.com', '555-555-3455', '322 Maple St'),
+('David', 'Lee', 'davidlee@gmail.com', '555-555-7899', '655 Pine St'),
+('Karen', 'Nguyen', 'karennguyen@gmail.com', '555-555-2344', '988 Cedar St'),
+('Michael', 'Garcia', 'michaelgarcia@gmail.com', '555-555-6788', '244 Birch St'),
+('Harsha', 'Siddagangaiah', 'harshasiddagangaiah@gmail.com', '555-555-0122', '133 Spruce St'),
+('William', 'Miller', 'williammiller@gmail.com', '555-555-4566', '866 Ash St'),
+('Sophia', 'Wilson', 'sophiawilson@gmail.com', '555-555-8900', '366 Walnut St');
+
+INSERT INTO Employees (FirstName, LastName, Email, Phone, Address, HireDate) VALUES
+('Sarah', 'Johnson', 'sarahjohnson@gmail.com', '555-555-1234', '123 Main St', '2021-01-01'),
+('Mark', 'Garcia', 'markgarcia@gmail.com', '555-555-5678', '456 Elm St', '2021-01-15'),
+('Emily', 'Lee', 'emilylee@gmail.com', '555-555-9012', '789 Oak St', '2021-02-01'),
+('Alex', 'Nguyen', 'alexnguyen@gmail.com', '555-555-3456', '321 Maple St', '2021-02-15'),
+('Jessica', 'Davis', 'jessicadavis@gmail.com', '555-555-7890', '654 Pine St', '2021-03-01'),
+('Brian', 'Wilson', 'brianwilson@gmail.com', '555-555-2345', '987 Cedar St', '2021-03-15'),
+('Eric', 'Miller', 'ericmiller@gmail.com', '555-555-6789', '246 Birch St', '2021-04-01'),
+('Rachel', 'Smith', 'rachelsmith@gmail.com', '555-555-0123', '135 Spruce St', '2021-04-15'),
+('Kevin', 'Jones', 'kevinjones@gmail.com', '555-555-4567', '864 Ash St', '2021-05-01'),
+('Michelle', 'Nguyen', 'michellevnguyen@gmail.com', '555-555-8901', '369 Walnut St', '2021-05-15');
+
+INSERT INTO Cars (Make, Model, Year, Price, Color, Mileage, Transmission, FuelType, BodyType)
+VALUES
+('Toyota', 'Camry', 2021, 25000.00, 'Red', 1000, 'Automatic', 'Gasoline', 'Sedan'),
+('Honda', 'Civic', 2022, 22000.00, 'Blue', 500, 'Manual', 'Gasoline', 'Coupe'),
+('Ford', 'F-150', 2020, 45000.00, 'Black', 10000, 'Automatic', 'Diesel', 'Pickup Truck'),
+('Chevrolet', 'Malibu', 2019, 18000.00, 'Silver', 8000, 'Automatic', 'Gasoline', 'Sedan'),
+('Nissan', 'Altima', 2020, 23000.00, 'White', 7000, 'CVT', 'Gasoline', 'Sedan'),
+('BMW', 'X5', 2021, 60000.00, 'Black', 2000, 'Automatic', 'Gasoline', 'SUV'),
+('Mercedes-Benz', 'C-Class', 2022, 45000.00, 'Gray', 1000, 'Automatic', 'Gasoline', 'Sedan'),
+('Audi', 'A4', 2021, 35000.00, 'White', 5000, 'Automatic', 'Gasoline', 'Sedan'),
+('Tesla', 'Model S', 2021, 80000.00, 'Blue', 1000, 'Automatic', 'Electric', 'Sedan'),
+('Jeep', 'Wrangler', 2020, 35000.00, 'Green', 8000, 'Manual', 'Gasoline', 'SUV'),
+('Kia', 'Sorento', 2022, 32000.00, 'White', 1000, 'Automatic', 'Gasoline', 'SUV'),
+('Toyota', 'Highlander', 2021, 42000.00, 'Black', 3000, 'Automatic', 'Hybrid', 'SUV'),
+('Nissan', 'Rogue', 2022, 29000.00, 'Silver', 1000, 'Automatic', 'Gasoline', 'SUV'),
+('Honda', 'Accord', 2019, 20000.00, 'Blue', 12000, 'Automatic', 'Gasoline', 'Sedan'),
+('Ford', 'Mustang', 2021, 35000.00, 'Red', 4000, 'Manual', 'Gasoline', 'Coupe'),
+('Chevrolet', 'Equinox', 2022, 33000.00, 'White', 500, 'Automatic', 'Gasoline', 'SUV'),
+('Audi', 'Q5', 2021, 48000.00, 'Black', 8000, 'Automatic', 'Gasoline', 'SUV'),
+('BMW', '3-Series', 2022, 55000.00, 'Silver', 2000, 'Automatic', 'Gasoline', 'Sedan'),
+('Tesla', 'Model 3', 2021, 45000.00, 'White', 5000, 'Automatic', 'Electric', 'Sedan'),
+('Mercedes-Benz', 'GLE-Class', 2022, 67000.00, 'Black', 1000, 'Automatic', 'Gasoline', 'SUV'),
+('Jeep', 'Grand Cherokee', 2021, 48000.00, 'Red', 6000, 'Automatic', 'Gasoline', 'SUV'),
+('Ram', '1500', 2020, 40000.00, 'Blue', 8000, 'Automatic', 'Gasoline', 'Pickup Truck'),
+('GMC', 'Sierra 1500', 2022, 50000.00, 'White', 2000, 'Automatic', 'Diesel', 'Pickup Truck'),
+('Honda', 'CR-V', 2021, 28000.00, 'Gray', 4000, 'CVT', 'Gasoline', 'SUV'),
+('Ford', 'Escape', 2022, 32000.00, 'Blue', 2000, 'Automatic', 'Hybrid', 'SUV'),
+('Toyota', 'Rav4', 2020, 27000.00, 'White', 8000, 'Automatic', 'Gasoline', 'SUV'),
+('Nissan', 'Sentra', 2021, 22000.00, 'Red', 3000, 'CVT', 'Gasoline', 'Sedan'),
+('Chevrolet', 'Camaro', 2022, 45000.00, 'Yellow', 1000, 'Automatic', 'Gasoline', 'Coupe'),
+('Jeep', 'Compass', 2020, 28000.00, 'Black', 6000, 'Automatic', 'Gasoline', 'SUV'),
+('Mercedes-Benz', 'GLC-Class', 2021, 52000.00, 'White', 5000, 'Automatic', 'Gasoline', 'SUV'),
+('Audi', 'Q3', 2022, 38000.00, 'Gray', 2000, 'Automatic', 'Gasoline', 'SUV'),
+('Tesla', 'Model X', 2021, 90000.00, 'Black', 500, 'Automatic', 'Electric', 'SUV'),
+('BMW', '5-Series', 2022, 62000.00, 'Blue', 1000, 'Automatic', 'Gasoline', 'Sedan'),
+('Ford', 'Explorer', 2020, 40000.00, 'Silver', 9000, 'Automatic', 'Gasoline', 'SUV'),
+('Toyota', 'Tacoma', 2021, 35000.00, 'Red', 5000, 'Automatic', 'Gasoline', 'Pickup Truck'),
+('Nissan', 'Maxima', 2022, 34000.00, 'Gray', 2000, 'CVT', 'Gasoline', 'Sedan'),
+('Honda', 'Odyssey', 2021, 35000.00, 'Black', 3000, 'Automatic', 'Gasoline', 'Minivan'),
+('Subaru', 'Outback', 2022, 35000.00, 'Green', 1000, 'Automatic', 'Gasoline', 'SUV'),
+('Chevrolet', 'Silverado', 2022, 55000.00, 'Black', 2000, 'Automatic', 'Diesel', 'Pickup Truck'),
+('Dodge', 'Charger', 2021, 42000.00, 'Blue', 5000, 'Automatic', 'Gasoline', 'Sedan'),
+('Jeep', 'Renegade', 2022, 29000.00, 'Orange', 1000, 'Automatic', 'Gasoline', 'SUV');
+
+INSERT INTO Purchases (PurchaseDate, PurchasePrice, CarID, CustomerID, EmployeeID) 
+VALUES 
+('2023-03-03', 40000.00, 22, 1, 8),
+('2023-03-04', 28000.00, 24, 1, 9),
+('2023-03-05', 29000.00, 13, 2, 4),
+('2023-03-06', 27000.00, 26, 2, 7),
+('2023-03-07', 62000.00, 33, 3, 4),
+('2023-03-08', 90000.00, 32, 3, 7),
+('2023-03-09', 32000.00, 25, 4, 4),
+('2023-03-10', 35000.00, 15, 4, 6),
+('2023-03-11', 22000.00, 27, 5, 5),
+('2023-03-12', 33000.00, 16, 5, 10),
+('2023-03-13', 52000.00, 30, 6, 5),
+('2023-03-14', 60000.00, 6, 6, 9),
+('2023-03-15', 28000.00, 29, 7, 3),
+('2023-03-16', 50000.00, 23, 7, 10),
+('2023-03-17', 35000.00, 35, 8, 3),
+('2023-03-18', 45000.00, 28, 8, 8),
+('2023-03-19', 48000.00, 17, 9, 4),
+('2023-03-20', 48000.00, 21, 9, 3),
+('2023-03-21', 35000.00, 37, 10, 9),
+('2023-03-22', 38000.00, 31, 10, 2);
+
+INSERT INTO SoldCars (PurchaseDate, PurchasePrice, SoldDate, SoldPrice, CarID, CustomerID, EmployeeID)
+VALUES
+('2023-03-01',48000.00,'2023-03-11',43200.00,21,1,1),
+('2023-03-02',45000.00,'2023-03-12',40500.00,3,2,1),
+('2023-03-03',45000.00,'2023-03-13',40500.00,28,3,8),
+('2023-03-04',45000.00,'2023-03-14',40500.00,19,4,7),
+('2023-03-05',34000.00,'2023-03-15',30600.00,36,5,6),
+('2023-03-06',48000.00,'2023-03-16',43200.00,17,6,5),
+('2023-03-07',67000.00,'2023-03-17',60300.00,20,7,3),
+('2023-03-08',34000.00,'2023-03-18',30600.00,36,8,2),
+('2023-03-09',35000.00,'2023-03-19',31500.00,37,9,5),
+('2023-03-10',40000.00,'2023-03-20',36000.00,34,10,1);
+
+INSERT INTO Appointments (EmployeeID, AppointmentDate, AppointmentTime, AppointmentType) VALUES
+(1, '2023-04-01', '10:00:00', 'Test Drive'),
+(1, '2023-04-01', '10:30:00', 'Maintenance'),
+(1, '2023-04-03', '10:00:00', 'Test Drive'),
+(1, '2023-04-03', '10:30:00', 'Maintenance'),
+(2, '2023-04-01', '11:00:00', 'Test Drive'),
+(2, '2023-04-01', '11:30:00', 'Maintenance'),
+(2, '2023-04-03', '11:00:00', 'Test Drive'),
+(2, '2023-04-03', '11:30:00', 'Maintenance'),
+(3, '2023-04-01', '12:00:00', 'Test Drive'),
+(3, '2023-04-01', '12:30:00', 'Maintenance'),
+(3, '2023-04-03', '12:00:00', 'Test Drive'),
+(3, '2023-04-03', '12:30:00', 'Maintenance'),
+(4, '2023-04-01', '13:00:00', 'Test Drive'),
+(4, '2023-04-01', '13:30:00', 'Maintenance'),
+(4, '2023-04-03', '13:00:00', 'Test Drive'),
+(4, '2023-04-03', '13:30:00', 'Maintenance'),
+(5, '2023-04-01', '14:00:00', 'Test Drive'),
+(5, '2023-04-01', '14:30:00', 'Maintenance'),
+(5, '2023-04-03', '14:00:00', 'Test Drive'),
+(5, '2023-04-03', '14:30:00', 'Maintenance'),
+(6, '2023-04-02', '10:00:00', 'Test Drive'),
+(6, '2023-04-02', '10:30:00', 'Maintenance'),
+(6, '2023-04-04', '10:00:00', 'Test Drive'),
+(6, '2023-04-04', '10:30:00', 'Maintenance'),
+(7, '2023-04-02', '11:00:00', 'Test Drive'),
+(7, '2023-04-02', '11:30:00', 'Maintenance'),
+(7, '2023-04-04', '11:00:00', 'Test Drive'),
+(7, '2023-04-04', '11:30:00', 'Maintenance'),
+(8, '2023-04-02', '12:00:00', 'Test Drive'),
+(8, '2023-04-02', '12:30:00', 'Maintenance'),
+(8, '2023-04-04', '12:00:00', 'Test Drive'),
+(8, '2023-04-04', '12:30:00', 'Maintenance'),
+(9, '2023-04-02', '13:00:00', 'Test Drive'),
+(9, '2023-04-02', '13:30:00', 'Maintenance'),
+(9, '2023-04-04', '13:00:00', 'Test Drive'),
+(9, '2023-04-04', '13:30:00', 'Maintenance'),
+(10, '2023-04-02', '14:00:00', 'Test Drive'),
+(10, '2023-04-02', '14:30:00', 'Maintenance'),
+(10, '2023-04-04', '14:00:00', 'Test Drive'),
+(10, '2023-04-04', '14:30:00', 'Maintenance');
+
+INSERT INTO TestDrives (CustomerID, CarID, AppointmentID, TestDriveDate, TestDriveTime)
+VALUES 
+(1, 18, 11, '2023-04-03', '12:00:00'),
+(2, 8, 21, '2023-04-02', '10:00:00'),
+(3, 9, 13, '2023-04-01', '13:00:00'),
+(4, 5, 23, '2023-04-04', '10:00:00'),
+(5, 7, 15, '2023-04-03', '13:00:00'),
+(6, 4, 37, '2023-04-02', '14:00:00'),
+(7, 10, 17, '2023-04-01', '14:00:00'),
+(8, 11, 27, '2023-04-04', '11:00:00'),
+(9, 19, 25, '2023-04-02', '11:00:00'),
+(10, 14, 3, '2023-04-03', '10:00:00');
+
+INSERT INTO MaintenanceTypes (MaintenanceType, MaintenanceCost)
+VALUES
+('Oil Change', 49.99),
+('Tire Rotation', 19.99),
+('Brake Inspection', 29.99),
+('Air Filter Replacement', 24.99),
+('Coolant Flush', 69.99),
+('Transmission Service', 119.99),
+('Spark Plug Replacement', 49.99),
+('Battery Replacement', 99.99),
+('Alignment Service', 79.99),
+('Fuel System Cleaning', 89.99);
+
+
+INSERT INTO Maintenances(CustomerID, CarID, AppointmentID, MaintenanceDate, MaintenanceTime)
+VALUES 
+  (1, 22, 4, '2023-04-03', '10:30:00'),
+  (2, 26, 16, '2023-04-03', '13:30:00'),
+  (3, 33, 14, '2023-04-01', '13:30:00'),
+  (4, 25, 12, '2023-04-03', '12:30:00'),
+  (5, 27, 38, '2023-04-02', '14:30:00'),
+  (6, 30, 36, '2023-04-04', '13:30:00'),
+  (7, 29, 40, '2023-04-04', '14:30:00'),
+  (8, 35, 24, '2023-04-04', '10:30:00'),
+  (9, 17, 26, '2023-04-02', '11:30:00'),
+  (10, 37, 28, '2023-04-04', '11:30:00');
+
+INSERT INTO MaintenanceActivity (MaintenanceID, MaintenanceTypeID)
+VALUES 
+  (7,1),
+  (8,1),
+  (2,2),
+  (5,2),
+  (9,2),
+  (2,3),
+  (4,3),
+  (6,3),
+  (10,3),
+  (1,5),
+  (3,5),
+  (1,6),
+  (3,6),
+  (4,6),
+  (5,6),
+  (1,7),
+  (8,7),
+  (9,7),
+  (5,8),
+  (10,8),
+  (2,9),
+  (4,9);
+
+
